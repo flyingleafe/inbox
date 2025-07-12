@@ -1,0 +1,17 @@
+[project]
+name = "inbox"
+version = "0.1.0"
+description = "Smart folder for dropping stuff"
+readme = "README.md"
+authors = [
+    { name = "Dmitrii Mukhutdinov", email = "flyingleafe@gmail.com" }
+]
+requires-python = ">=3.12"
+dependencies = []
+
+[project.scripts]
+inbox = "inbox:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
