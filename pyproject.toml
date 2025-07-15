@@ -1,21 +1,116 @@
 [project]
-name = "inbox"
+name = "inbox-ai"
 version = "0.1.0"
-description = "Smart folder for dropping stuff"
+description = "Smart folder watcher with desktop notifications - monitors file changes and sends notifications"
 readme = "README.md"
 authors = [
     { name = "Dmitrii Mukhutdinov", email = "flyingleafe@gmail.com" }
 ]
+maintainers = [
+    { name = "Dmitrii Mukhutdinov", email = "flyingleafe@gmail.com" }
+]
+license = { text = "MIT" }
 requires-python = ">=3.12"
+keywords = ["file-watcher", "inotify", "notifications", "systemd", "desktop"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Environment :: No Input/Output (Daemon)",
+    "Intended Audience :: End Users/Desktop",
+    "Intended Audience :: System Administrators",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Desktop Environment",
+    "Topic :: System :: Filesystems",
+    "Topic :: System :: Monitoring",
+    "Topic :: System :: Systems Administration",
+]
+
 dependencies = [
     "asgiref>=3.9.1",
     "inotify>=0.2.12",
     "notify-py>=0.3.43",
 ]
 
+[project.optional-dependencies]
+systemd = [
+    "systemd-python>=235",
+]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-asyncio>=0.21.0",
+    "mypy>=1.0.0",
+    "ruff>=0.1.0",
+    "pre-commit>=3.0.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/flyingleafe/inbox-ai"
+Repository = "https://github.com/flyingleafe/inbox-ai"
+Issues = "https://github.com/flyingleafe/inbox-ai/issues"
+Documentation = "https://github.com/flyingleafe/inbox-ai#readme"
+
 [project.scripts]
-inbox = "inbox:main"
+inbox = "inbox.main:main"
+inbox-systemd = "inbox.systemd_entry:main"
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/inbox"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "/src",
+    "/README.md",
+    "/pyproject.toml",
+]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 88
+select = [
+    "E",  # pycodestyle errors
+    "W",  # pycodestyle warnings
+    "F",  # pyflakes
+    "I",  # isort
+    "B",  # flake8-bugbear
+    "C4", # flake8-comprehensions
+    "UP", # pyupgrade
+]
+ignore = [
+    "E501",  # line too long, handled by black
+    "B008",  # do not perform function calls in argument defaults
+    "C901",  # too complex
+]
+
+[tool.ruff.per-file-ignores]
+"__init__.py" = ["F401"]
+
+[tool.mypy]
+python_version = "3.12"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+warn_unreachable = true
+strict_equality = true
+
+[[tool.mypy.overrides]]
+module = [
+    "inotify.*",
+    "notifypy.*",
+    "systemd.*",
+]
+ignore_missing_imports = true
