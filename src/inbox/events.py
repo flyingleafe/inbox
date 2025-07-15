@@ -1,11 +1,12 @@
-import itertools
 
-from enum import Enum
-from typing import AsyncGenerator, Callable, Generator, Iterable, TypeVar
+from collections.abc import AsyncGenerator, Iterable, Iterator
 from dataclasses import dataclass
+from enum import Enum
+from typing import TypeVar, Any
 
-from inotify.adapters import Inotify, _INOTIFY_EVENT as INOTIFY_EVENT
 from asgiref.sync import sync_to_async
+from inotify.adapters import INOTIFY_EVENT as INOTIFY_EVENT
+from inotify.adapters import Inotify
 
 # Utils
 
@@ -13,17 +14,18 @@ iter_async = sync_to_async(iter)
 
 
 @sync_to_async
-def next_async(it):
+def next_async(it: Iterator[Any]) -> Any:
     try:
         return next(it)
     except StopIteration:
-        raise StopAsyncIteration
+        raise StopAsyncIteration from None
 
 
 T = TypeVar("T")
 
+
 def to_async_iter(iterable: Iterable[T]) -> AsyncGenerator[T, None]:
-    async def _inner():
+    async def _inner() -> AsyncGenerator[T, None]:
         async_iter = await iter_async(iterable)
         while True:
             try:
@@ -32,6 +34,7 @@ def to_async_iter(iterable: Iterable[T]) -> AsyncGenerator[T, None]:
                 return
 
     return _inner()
+
 
 # Events
 
@@ -68,11 +71,7 @@ def is_valid_event(
     return True
 
 
-
-
-
 async def batched_events(inotify: Inotify) -> AsyncGenerator[Event, None]:
-
     for event in inotify.event_gen(yield_nones=False):
         if event is None:
             continue
