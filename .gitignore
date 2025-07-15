@@ -7,3 +7,15 @@ devenv.local.nix
 
 # pre-commit
 .pre-commit-config.yaml
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pyw
+*.pyz
+*.pywz
+*.pyzw
+
+dist/

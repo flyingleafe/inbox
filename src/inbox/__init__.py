@@ -1,2 +1,1 @@
-def main() -> None:
-    print("Hello from inbox!")
+from .main import *
